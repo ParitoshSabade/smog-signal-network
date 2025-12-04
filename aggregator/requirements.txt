@@ -1,0 +1,4 @@
+flask
+flask-cors
+kafka-python
+python-dotenv
