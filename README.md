@@ -23,6 +23,8 @@ The **Smog Signal Network** is built on an event-driven, three-tier microservice
 * **Aggregator** (`aggregator/app.py`): Consumes enriched data, maintains a fast, in-memory **leaderboard** (sorted by raw concentration), and exposes it via a Flask REST API on `http://localhost:5001/leaderboard`.
 * **Frontend** (`frontend/`): A React application that polls the Aggregator API every 30 seconds to display the real-time leaderboard.
 
+![Project Architecture](images/architecture.png)
+
 ---
 
 ## ⚙️ Prerequisites and Local Run Instructions
@@ -49,15 +51,15 @@ source venv/bin/activate
 
 ### Step 2: Configure Environment Variables
 Create a file named .env in the root directory and populate it with your configuration.
-# .env file
-# Kafka Broker Address 
+#### .env file
+#### Kafka Broker Address 
 KAFKA_BROKER="localhost:9093" 
 
-# Your OpenAQ API Key
+#### Your OpenAQ API Key
 OPENAQ_API_KEY="YOUR_OPENAQ_API_KEY_HERE"
 
 ### Step 3: Install Dependencies
-# Install dependencies for all Python services
+#### Install dependencies for all Python services
 ```bash
 pip install -r ingestor/requirements.txt
 pip install -r analyzer/requirements.txt
@@ -71,19 +73,19 @@ cd ..
 ### Step 4: Run the Microservices (in 3 Separate Terminal Tabs)
 IMPORTANT: Start the services in order (Ingestor $\rightarrow$ Analyzer $\rightarrow$ Aggregator) to ensure the Kafka topics are created and data flow is established.
 
-# 1. Start Ingestor (Terminal Tab 1)
+#### 1. Start Ingestor (Terminal Tab 1)
 ```Bash
 (venv) python ingestor/app.py
 ```
-# 2. Start Analyzer (Terminal Tab 2)
+#### 2. Start Analyzer (Terminal Tab 2)
 ```Bash
 (venv) python analyzer/app.py
 ```
-# 3. Start Aggregator (Terminal Tab 3)
+#### 3. Start Aggregator (Terminal Tab 3)
 ```Bash
 (venv) python aggregator/app.py
 ```
-# Step 5: Start Frontend
+#### Step 5: Start Frontend
 Navigate to the frontend directory and start the development server.
 ```Bash
 cd frontend
@@ -94,17 +96,22 @@ The leaderboard will be accessible at http://localhost:5173
 ### Screenshots (Proof of Concept)
 These screenshots validate the real-time processing and the final user experience.
 
-# 1. Analyzer Output (Data Enrichment)
+#### 1. Ingestor Output (Data Ingestion)
+This terminal shows the Ingestor polling HTTP PM2.5 latest data and publishing it to raw data topic. 
+
+![Ingestor Terminal Log showing polling](images/ingestor.png)
+
+#### 2. Analyzer Output (Data Enrichment)
 This terminal shows the Analyzer consuming raw data and successfully enriching it with the calculated AQI Category before publishing to the enriched topic.
 
-![Analyzer Terminal Log showing categorization](Screenshot 2025-12-04 at 11.03.16 AM.png)
+![Analyzer Terminal Log showing categorization](images/analyzer.png)
 
-# 2. Aggregator Output (Leaderboard Updates)
+#### 3. Aggregator Output (Leaderboard Updates)
 This terminal confirms the Aggregator is successfully connected to the enriched topic and is actively updating its in-memory data store for the leaderboard.
 
-![Aggregator Terminal Log showing updated leaderboard size](Screenshot 2025-12-04 at 11.03.35 AM.png)
+![Aggregator Terminal Log showing updated leaderboard size](images/aggregator.png)
 
-# 3. Frontend Leaderboard
+#### 4. Frontend Leaderboard
 The final React dashboard, displaying the real-time, sorted, and color-coded air quality data consumed from the Aggregator API.
 
-![Global PM2.5 Leaderboard Frontend UI](Screenshot 2025-12-04 at 9.53.52 AM.png)
+![Global PM2.5 Leaderboard Frontend UI](images/leaderboard.png)
